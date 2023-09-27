@@ -1,38 +1,58 @@
-.App {
+/* COMMON */
+li {
+  list-style: none;
+}
+
+/* HEADER */
+header {
+  position: sticky;
+  top: 0;
+  padding: 14px;
+  background-color: #fff;
   text-align: center;
+  font-weight: 700;
+  font-size: 1.4rem;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* ISSUE LIST */
+.issue-ul {
+  margin: 0 16px;
+}
+.issue-ul li {
+  min-height: 60px;
+  border-bottom: 1px solid #ddd;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.issue-ul .ad-img {
+  display: flex;
+}
+.issue-ul .ad-img a {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+.issue-ul .ad-img img {
+  margin: auto 0;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.issue-li {
+  display: flex;
+  padding: 14px 0 6px;
+  justify-content: space-between;
+}
+.issue-li .info {
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
+}
+.issue-li .info .title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.issue-li .comment {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  text-align: left;
+  min-width: 90px;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
