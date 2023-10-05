@@ -1,45 +1,73 @@
 import React, { useEffect, useState } from "react";
 import { Octokit } from "@octokit/core";
+import Loading from "../components/Loading";
+import { Link } from "react-router-dom";
 
+/* https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-organization-issues-assigned-to-the-authenticated-user--code-samples */
+/* page, per_page 참고? */
 const MainPage = () => {
   const [loading, setLoading] = useState(true)
   const [issues, setIssues] = useState([])
-
-  useEffect(() => {
+  const [page, setPage] = useState(1);
+  
+  const getIssues = async (page) => {
     const octokit = new Octokit({
       auth: process.env.REACT_ACCESS_TOKEN
-    })
+    });
 
-    const getIssues = async () => {
-      const response = await octokit.request('GET /repos/{owner}/{repo}/issues', {
-        owner: 'facebook',
-        repo: 'react',
-        sort: 'comments', /* 코멘트 많은 순으로 정렬 */
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28'
-        }
-      });
-      setIssues(response.data);
-    }
-    getIssues();
-  }, [])
+    const response = await octokit.request('GET /repos/{owner}/{repo}/issues', {
+      owner: 'facebook',
+      repo: 'react',
+      sort: 'comments', /* 코멘트 많은 순으로 정렬 */
+      page: page,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+    setIssues(current => [...current, ...response.data]);
+    setPage(current=>current+1);
+    setLoading(false);
+  }
 
   useEffect(() => {
-    if(issues.length>0) {
-      setLoading(false);
+    window.addEventListener('scroll', () => {
+      if(Math.round(document.documentElement.scrollTop + window.innerHeight) - document.body.scrollHeight > -10) {
+        setLoading(true);
+      }
+    })
+    getIssues(1);
+  }, [])
+  
+  useEffect(() => {
+    if(loading && page>1 ) {
+      setLoading(true);
+      getIssues(page);
     }
-  }, [issues])
+  }, [loading, page])
+
+  useEffect(()=> {
+    console.log(issues, page);
+  }, [issues, page])
 
   const IssuesListComponent = () => {
-    const listitem = issues.map(({number, title, user, created_at, comments}, index) => 
+    //{number, title, user, created_at, comments}
+    const listitem = issues.map((issue, index) => 
       <>
         <li key={index} className="issue-li">        
-          <div className="info">
-            <span className="title">#{number} {title}</span>
-            <p className="info">작성자: {user.login}, 작성일: {Date.parse(created_at)}</p>
+          <div className="info-container">
+            <span className="title">
+              <Link to={`/${issue.number}`} state={issue}>
+                #{issue.number} {issue.title}
+              </Link>
+            </span>
+            <p className="info">작성자: {issue.user.login}, 작성일: {new Intl.DateTimeFormat('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }).format(new Date(issue.created_at))}</p>
           </div>
           <div className="comment">
-            <span>코멘트: {comments}</span>
+            <span>코멘트: {issue.comments}</span>
           </div>
         </li>
         {(index+1)%4===0?
@@ -57,11 +85,10 @@ const MainPage = () => {
     
   return (
     <>
-      {loading?
-      <div>Loading...</div>:/* 임시로딩 */
+      <Loading isloading={loading}/>
       <div>
         <IssuesListComponent/>
-      </div>}
+      </div>
     </>
   )
 }

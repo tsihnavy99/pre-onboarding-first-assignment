@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Header from './components/Header';
 import IssuesList from './pages/IssuesList';
+import IssueDetail from './pages/IssueDetail';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Header/>
       <Routes>
         <Route path='/' element={<IssuesList/>}/>
+        <Route path='/:issueNum' element={<IssueDetail/>}/>
       </Routes>
     </BrowserRouter>
   );
