@@ -1,11 +1,15 @@
-import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
 import Markdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
-
+import { MdOutlineArrowBackIos } from 'react-icons/md';
 
 const IssueDetail = () => {
   const issue = useLocation().state;
-  console.log(issue.body)
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [])
   
   return (
     <div className="issue-detail">
@@ -28,6 +32,10 @@ const IssueDetail = () => {
       <div className="body">
         <Markdown remarkPlugins={[remarkGfm]}>{issue.body}</Markdown>
       </div>
+      <Link to='/' className="go-back-btn">
+        <MdOutlineArrowBackIos size={26} className="go-back-btn back1"/>
+        <MdOutlineArrowBackIos size={26} className="go-back-btn back2"/>
+      </Link>
     </div>
   )
 }

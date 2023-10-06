@@ -4,7 +4,6 @@ import Loading from "../components/Loading";
 import { Link } from "react-router-dom";
 
 /* https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-organization-issues-assigned-to-the-authenticated-user--code-samples */
-/* page, per_page 참고? */
 const MainPage = () => {
   const [loading, setLoading] = useState(true)
   const [issues, setIssues] = useState([])
@@ -31,10 +30,14 @@ const MainPage = () => {
 
   useEffect(() => {
     window.addEventListener('scroll', () => {
+      if(window.scrollY!==0) {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+      }
       if(Math.round(document.documentElement.scrollTop + window.innerHeight) - document.body.scrollHeight > -10) {
         setLoading(true);
       }
     })
+
     getIssues(1);
   }, [])
   
@@ -46,11 +49,18 @@ const MainPage = () => {
   }, [loading, page])
 
   useEffect(()=> {
-    console.log(issues, page);
+    if(issues.length>0) {
+      const scroll = sessionStorage.getItem('scrollPosition');
+      const restoreScrollPosition = () => {
+        if(sessionStorage.getItem('scrollPosition')!==undefined) {
+          window.scrollTo(0, scroll);
+        }
+      }
+      restoreScrollPosition();
+    }
   }, [issues, page])
 
   const IssuesListComponent = () => {
-    //{number, title, user, created_at, comments}
     const listitem = issues.map((issue, index) => 
       <>
         <li key={index} className="issue-li">        
